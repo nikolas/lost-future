@@ -1,10 +1,11 @@
-let BODY, CTX, WIDTH, HEIGHT
+let CANVAS, CTX;
+let BODY, WIDTH, HEIGHT
 let LAST = 0;
 
 const IMAGES = [
     '1.jpg',
     '2.jpg',
-    // '3.jpg',
+    '3.jpg',
     '4.jpg',
     '5.jpg',
     'afterstep.jpg',
@@ -15,7 +16,6 @@ const showImage = function(imgFile, ctx, x, y, w, h) {
     const img = new Image();
     img.src = './img/' + imgFile;
     img.onload = function() {
-        console.log('img', img.width);
         ctx.drawImage(
             img,
             x,
@@ -35,7 +35,32 @@ const getRandomColor = function() {
     return `rgba(${r}, ${g}, ${b}, ${a})`;
 };
 
-const makeBlock = function(ctx, i, j) {
+const getRandomImage = function(images) {
+    return images[
+        Math.floor(Math.random() * images.length)];
+};
+
+const makeBlock = function(app, i, j) {
+    if (Math.random() > 0.5) {
+        const img = getRandomImage(IMAGES);
+        const sprite = PIXI.Sprite.from('./img/' + img);
+        sprite.x = i;
+        sprite.y = j;
+        sprite.width = 60;
+        sprite.height = 60;
+        console.log(sprite);
+        app.stage.addChild(sprite);
+        return sprite;
+    }
+
+    const g = new PIXI.Graphics();
+    g.lineStyle(0);
+    g.beginFill(0x650A5A, 1);
+    g.drawCircle(i, j, 50);
+    g.endFill();
+    app.stage.addChild(g);
+    return g;
+
     ctx.shadowBlur = 20;
     ctx.shadowColor = 'rgba(0,0,0,0.2)';
     ctx.fillStyle = getRandomColor();
@@ -55,7 +80,12 @@ const updateBg = function(ctx) {
     BODY.style.backgroundColor = getRandomColor();
 };
 
-const makeGrid = function(ctx) {
+const makeGrid = function(app) {
+    for (let i = 0; i < WIDTH; i += 80) {
+        for (let j = 0; j < HEIGHT; j += 80) {
+            makeBlock(app, i, j);
+        }
+    }
 };
 
 const initCanvas = function(ctx) {
@@ -77,9 +107,8 @@ const initCanvas = function(ctx) {
 };
 
 const render = function(now) {
-    if (!LAST || now - LAST >= 2000 + Math.random() * 500) {
+    if (!LAST) {
         LAST = now;
-        console.log(now);
 
         CTX.clearRect(0, 0, WIDTH, HEIGHT);
         updateBg(CTX);
@@ -88,18 +117,52 @@ const render = function(now) {
     window.requestAnimationFrame(render);
 };
 
+const onResize = function() {
+    // We need to define the dimensions of the canvas to our canvas element
+    // Javascript doesn't know the computed dimensions from CSS so we need to do it manually
+    width = CANVAS.offsetWidth;
+    height = CANVAS.offsetHeight;
+
+    // If the screen device has a pixel ratio over 1
+    // We render the canvas twice bigger to make it sharper (e.g. Retina iPhone)
+    if (window.devicePixelRatio > 1) {
+        CANVAS.width = CANVAS.clientWidth * 2;
+        CANVAS.height = CANVAS.clientHeight * 2;
+        CTX.scale(2, 2);
+    } else {
+        CANVAS.width = width;
+        CANVAS.height = height;
+    }
+};
+
+
+
 document.addEventListener('DOMContentLoaded', (event) => {
     WIDTH = window.innerWidth;
     HEIGHT = window.innerHeight;
+    const app = new PIXI.Application({
+        width: WIDTH,
+        height: HEIGHT
+    });
+    document.body.appendChild(app.view);
+    const sprite = makeBlock(app, 1, 2);
+    makeGrid(app);
+
+    let elapsed = 0.0;
+    app.ticker.add((delta) => {
+        elapsed += delta;
+        sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
+        sprite.y = 100.0 + Math.sin(elapsed/50.0) * 100.0;
+    });
+    return;
+
     makeGrid(document.getElementById('grid'), WIDTH);
 
     BODY = document.querySelector('body');
 
-    const c = document.getElementById('scene');
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
+    CANVAS = document.getElementById('scene');
 
-    CTX = c.getContext('2d');
+    CTX = CANVAS.getContext('2d');
     initCanvas(CTX);
 
     makeGrid(CTX);
@@ -107,6 +170,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     IMAGES.forEach(function(img) {
         showImage(img, CTX, WIDTH, HEIGHT);
     });
+
+    window.addEventListener('resize', onResize);
+    onResize();
 
     window.requestAnimationFrame(render);
 });
