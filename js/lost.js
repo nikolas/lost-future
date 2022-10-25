@@ -11,15 +11,15 @@ const IMAGES = [
     'openttd.jpg'
 ];
 
-const showImage = function(imgFile, ctx, w, h) {
+const showImage = function(imgFile, ctx, x, y, w, h) {
     const img = new Image();
     img.src = './img/' + imgFile;
     img.onload = function() {
         console.log('img', img.width);
         ctx.drawImage(
             img,
-            Math.random() * w,
-            Math.random() * h,
+            x,
+            y,
             Math.min(img.width, w),
             Math.min(img.height, h)
         );
@@ -31,19 +31,24 @@ const getRandomColor = function() {
     const r = Math.random() * 255;
     const g = Math.random() * 255;
     const b = Math.random() * 255;
-    return `rgb(${r}, ${g}, ${b})`;
+    const a = 1;
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
 };
 
 const makeBlock = function(ctx, i, j) {
     ctx.shadowBlur = 20;
-    ctx.shadowColor = 'black';
+    ctx.shadowColor = 'rgba(0,0,0,0.2)';
     ctx.fillStyle = getRandomColor();
-    ctx.fillRect(i+5, j+5, 10, 10);
+
+    let blockSize = 40;
+    blockSize += Math.random() * 40;
+
+    ctx.fillRect(i+10, j+10, blockSize, blockSize);
 };
 
 const updateBg = function(ctx) {
-    for (let i = 0; i < WIDTH; i += 20) {
-        for (let j = 0; j < HEIGHT; j += 20) {
+    for (let i = 0; i < WIDTH; i += 80) {
+        for (let j = 0; j < HEIGHT; j += 80) {
             makeBlock(ctx, i, j);
         }
     }
@@ -72,10 +77,11 @@ const initCanvas = function(ctx) {
 };
 
 const render = function(now) {
-    if (!LAST || now - LAST >= 200) {
+    if (!LAST || now - LAST >= 2000 + Math.random() * 500) {
         LAST = now;
         console.log(now);
 
+        CTX.clearRect(0, 0, WIDTH, HEIGHT);
         updateBg(CTX);
     }
 
