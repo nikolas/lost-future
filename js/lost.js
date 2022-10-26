@@ -1,4 +1,3 @@
-let CTX;
 let BODY, WIDTH, HEIGHT
 let LAST = 0;
 
@@ -25,10 +24,6 @@ const getRandomImage = function(images) {
         Math.floor(Math.random() * images.length)];
 };
 
-const handleSpriteClick = function(e) {
-    console.log('clicked!');
-};
-
 const makeBlock = function(app, i, j) {
     if (Math.random() > 0.5) {
         const img = getRandomImage(IMAGES);
@@ -41,45 +36,36 @@ const makeBlock = function(app, i, j) {
         sprite.y = j;
         sprite.width = 80;
         sprite.height = 80;
+        sprite.anchor.set(0.5);
         sprite.interactive = true;
         sprite.cursor = 'pointer';
-        sprite.on('pointerdown', (event) => {
+        sprite.on('pointerdown', () => {
             console.log('pointerdown');
         });
+
+        sprite.on('mouseover', () => {
+            sprite.tint = 0xFB3050;
+        });
+        sprite.on('mouseleave', () => {
+            sprite.tint = 0xFFFFFF;
+        });
+
         app.stage.addChild(sprite);
         return sprite;
     }
 
     const g = new PIXI.Graphics();
     g.interactive = true;
-    g.buttonMode = 'pointer';
+    g.cursor = 'pointer';
     g.on('pointerdown', (event) => {
         console.log('g pointerdown');
     });
     g.lineStyle(0);
     g.beginFill(0x650A5A, 1);
-    g.drawCircle(i, j, 50);
+    g.drawCircle(Math.random() * WIDTH, j, 28 + (j/10));
     g.endFill();
     app.stage.addChild(g);
     return g;
-
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = 'rgba(0,0,0,0.2)';
-    ctx.fillStyle = getRandomColor();
-
-    let blockSize = 40;
-    blockSize += Math.random() * 40;
-
-    ctx.fillRect(i+10, j+10, blockSize, blockSize);
-};
-
-const updateBg = function(ctx) {
-    for (let i = 0; i < WIDTH; i += 80) {
-        for (let j = 0; j < HEIGHT; j += 80) {
-            makeBlock(ctx, i, j);
-        }
-    }
-    BODY.style.backgroundColor = getRandomColor();
 };
 
 const makeGrid = function(app) {
@@ -90,27 +76,10 @@ const makeGrid = function(app) {
     }
 };
 
-const initCanvas = function(ctx) {
-    ctx.lineWidth = 10;
-
-    // Wall
-    ctx.strokeRect(75, 140, 150, 110);
-
-    // Door
-    ctx.fillRect(130, 190, 40, 60);
-
-    // Roof
-    ctx.beginPath();
-    ctx.moveTo(50, 140);
-    ctx.lineTo(150, 60);
-    ctx.lineTo(250, 140);
-    ctx.closePath();
-    ctx.stroke();
-};
-
 class Scene {
     constructor(w, h) {
         const app = new PIXI.Application({
+            antialias: true,
             backgroundAlpha: 0,
             width: w,
             height: h
@@ -123,8 +92,8 @@ class Scene {
         let elapsed = 0.0;
         app.ticker.add((delta) => {
             elapsed += delta;
-            sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
-            sprite.y = 100.0 + Math.sin(elapsed/50.0) * 100.0;
+            //sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
+            //sprite.y = 100.0 + Math.sin(elapsed/50.0) * 100.0;
         });
     }
 }
