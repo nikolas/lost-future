@@ -33,14 +33,18 @@ const makeBlock = function(app, i, j) {
     if (Math.random() > 0.5) {
         const img = getRandomImage(IMAGES);
         const sprite = PIXI.Sprite.from('./img/' + img);
-        console.log(sprite);
+        sprite.texture.on('update', (e) => {
+            const aspectRatio = e.width / e.height;
+            sprite.height /= aspectRatio;
+        });
         sprite.x = i;
         sprite.y = j;
-        sprite.width = 60;
-        sprite.height = 60;
+        sprite.width = 80;
+        sprite.height = 80;
         sprite.interactive = true;
-        sprite.on('tap', (event) => {
-            console.log('hi');
+        sprite.cursor = 'pointer';
+        sprite.on('pointerdown', (event) => {
+            console.log('pointerdown');
         });
         app.stage.addChild(sprite);
         return sprite;
@@ -48,6 +52,10 @@ const makeBlock = function(app, i, j) {
 
     const g = new PIXI.Graphics();
     g.interactive = true;
+    g.buttonMode = 'pointer';
+    g.on('pointerdown', (event) => {
+        console.log('g pointerdown');
+    });
     g.lineStyle(0);
     g.beginFill(0x650A5A, 1);
     g.drawCircle(i, j, 50);
@@ -103,6 +111,7 @@ const initCanvas = function(ctx) {
 class Scene {
     constructor(w, h) {
         const app = new PIXI.Application({
+            backgroundAlpha: 0,
             width: w,
             height: h
         });
@@ -121,7 +130,7 @@ class Scene {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    WIDTH = window.innerWidth - 16;
-    HEIGHT = window.innerHeight - 16;
+    WIDTH = window.innerWidth - 32;
+    HEIGHT = window.innerHeight - 32;
     new Scene(WIDTH, HEIGHT);
 });
