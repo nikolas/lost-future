@@ -12,21 +12,6 @@ const IMAGES = [
     'openttd.jpg'
 ];
 
-const showImage = function(imgFile, ctx, x, y, w, h) {
-    const img = new Image();
-    img.src = './img/' + imgFile;
-    img.onload = function() {
-        ctx.drawImage(
-            img,
-            x,
-            y,
-            Math.min(img.width, w),
-            Math.min(img.height, h)
-        );
-    };
-    return img;
-};
-
 const getRandomColor = function() {
     const r = Math.random() * 255;
     const g = Math.random() * 255;
@@ -40,19 +25,29 @@ const getRandomImage = function(images) {
         Math.floor(Math.random() * images.length)];
 };
 
+const handleSpriteClick = function(e) {
+    console.log('clicked!');
+};
+
 const makeBlock = function(app, i, j) {
     if (Math.random() > 0.5) {
         const img = getRandomImage(IMAGES);
         const sprite = PIXI.Sprite.from('./img/' + img);
+        console.log(sprite);
         sprite.x = i;
         sprite.y = j;
         sprite.width = 60;
         sprite.height = 60;
+        sprite.interactive = true;
+        sprite.on('tap', (event) => {
+            console.log('hi');
+        });
         app.stage.addChild(sprite);
         return sprite;
     }
 
     const g = new PIXI.Graphics();
+    g.interactive = true;
     g.lineStyle(0);
     g.beginFill(0x650A5A, 1);
     g.drawCircle(i, j, 50);
