@@ -1,4 +1,4 @@
-let CANVAS, CTX;
+let CTX;
 let BODY, WIDTH, HEIGHT
 let LAST = 0;
 
@@ -48,7 +48,6 @@ const makeBlock = function(app, i, j) {
         sprite.y = j;
         sprite.width = 60;
         sprite.height = 60;
-        console.log(sprite);
         app.stage.addChild(sprite);
         return sprite;
     }
@@ -106,73 +105,28 @@ const initCanvas = function(ctx) {
     ctx.stroke();
 };
 
-const render = function(now) {
-    if (!LAST) {
-        LAST = now;
+class Scene {
+    constructor(w, h) {
+        const app = new PIXI.Application({
+            width: w,
+            height: h
+        });
+        this.app = app;
+        document.body.appendChild(app.view);
+        const sprite = makeBlock(app, 1, 2);
+        makeGrid(app);
 
-        CTX.clearRect(0, 0, WIDTH, HEIGHT);
-        updateBg(CTX);
+        let elapsed = 0.0;
+        app.ticker.add((delta) => {
+            elapsed += delta;
+            sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
+            sprite.y = 100.0 + Math.sin(elapsed/50.0) * 100.0;
+        });
     }
-
-    window.requestAnimationFrame(render);
-};
-
-const onResize = function() {
-    // We need to define the dimensions of the canvas to our canvas element
-    // Javascript doesn't know the computed dimensions from CSS so we need to do it manually
-    width = CANVAS.offsetWidth;
-    height = CANVAS.offsetHeight;
-
-    // If the screen device has a pixel ratio over 1
-    // We render the canvas twice bigger to make it sharper (e.g. Retina iPhone)
-    if (window.devicePixelRatio > 1) {
-        CANVAS.width = CANVAS.clientWidth * 2;
-        CANVAS.height = CANVAS.clientHeight * 2;
-        CTX.scale(2, 2);
-    } else {
-        CANVAS.width = width;
-        CANVAS.height = height;
-    }
-};
-
-
+}
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    WIDTH = window.innerWidth;
-    HEIGHT = window.innerHeight;
-    const app = new PIXI.Application({
-        width: WIDTH,
-        height: HEIGHT
-    });
-    document.body.appendChild(app.view);
-    const sprite = makeBlock(app, 1, 2);
-    makeGrid(app);
-
-    let elapsed = 0.0;
-    app.ticker.add((delta) => {
-        elapsed += delta;
-        sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
-        sprite.y = 100.0 + Math.sin(elapsed/50.0) * 100.0;
-    });
-    return;
-
-    makeGrid(document.getElementById('grid'), WIDTH);
-
-    BODY = document.querySelector('body');
-
-    CANVAS = document.getElementById('scene');
-
-    CTX = CANVAS.getContext('2d');
-    initCanvas(CTX);
-
-    makeGrid(CTX);
-
-    IMAGES.forEach(function(img) {
-        showImage(img, CTX, WIDTH, HEIGHT);
-    });
-
-    window.addEventListener('resize', onResize);
-    onResize();
-
-    window.requestAnimationFrame(render);
+    WIDTH = window.innerWidth - 16;
+    HEIGHT = window.innerHeight - 16;
+    new Scene(WIDTH, HEIGHT);
 });
