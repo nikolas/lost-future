@@ -1,4 +1,5 @@
 import * as PIXI from './lib/pixi.min.mjs';
+import {makeShader} from './shader.mjs';
 
 const IMAGES = [
     '1.jpg',
@@ -85,6 +86,7 @@ const makeGrid = function(app, width, height) {
 export default class Scene {
     constructor(w, h) {
         const container = document.querySelector('.container');
+        this.light = 0;
 
         const app = new PIXI.Application({
             antialias: true,
@@ -92,11 +94,33 @@ export default class Scene {
             width: w,
             height: h
         });
+
         this.app = app;
         container.appendChild(app.view);
 
         const sprite = makeBlock(app, 1, 2);
         const grid = makeGrid(app, w, h);
+
+        const shader = makeShader(w, h);
+        const geometry = new PIXI.Geometry()
+              .addAttribute('aVertexPosition', // the attribute name
+                            [-100, -100, // x, y
+                             100, -100, // x, y
+                             100, 100,
+                             -100, 100], // x, y
+                            2) // the size of the attribute
+              .addAttribute('aUvs', // the attribute name
+                            [0, 0, // u, v
+                             1, 0, // u, v
+                             1, 1,
+                             0, 1], // u, v
+                            2) // the size of the attribute
+              .addIndex([0, 1, 2, 0, 2, 3]);
+        const quad = new PIXI.Mesh(geometry, shader);
+        quad.position.set(400, 300);
+        quad.scale.set(2);
+
+        this.app.stage.addChild(quad);
 
         let invisible = grid.filter(function(x) {
             return !x.visible;
@@ -104,18 +128,28 @@ export default class Scene {
 
         let elapsed = 0.0;
         let i = 0;
+        let time = 0;
         app.ticker.add((delta) => {
+            time += 1 / 60;
+            quad.shader.uniforms.time = time;
+            /*quad.scale.set(
+                Math.cos(time) * 1 + 2,
+                1);*/
+                //Math.sin(time * 0.7) * 1 + 2);
+
             elapsed += delta;
 
             if (i >= invisible.length) {
                 i = 0;
             }
 
-            if (Math.random() > 0.5) {
+            if (Math.round(elapsed) % 2 === 0) {
                 invisible[i].visible = true;
             } else {
                 invisible[i].visible = false;
             }
+            
+            this.light = Math.cos(elapsed / 50);
 
             //console.log(delta);
             //sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
