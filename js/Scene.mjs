@@ -70,7 +70,7 @@ const makeBlock = function(app, i, j, width) {
 
 const makeGrid = function(app, width, height) {
     let grid = [];
- 
+
     for (let i = 0; i < width; i += 80) {
         for (let j = 0; j < height; j += 80) {
             grid.push(makeBlock(app, i, j, width));
@@ -91,11 +91,25 @@ export default class Scene {
         this.app = app;
         document.body.appendChild(app.view);
         const sprite = makeBlock(app, 1, 2);
-        makeGrid(app, w, h);
+        const grid = makeGrid(app, w, h);
+
+        const invisible = grid.filter(function(x) {
+            return !x.visible;
+        });
 
         let elapsed = 0.0;
         app.ticker.add((delta) => {
             elapsed += delta;
+
+            if (Math.round(elapsed) % 2 === 0) {
+                const idx = Math.floor(Math.random() * invisible.length);
+                invisible[idx].visible = true;
+            } else {
+                const idx2 = Math.floor(Math.random() * invisible.length);
+                invisible[idx2].visible = false;
+            }
+
+            //console.log(delta);
             //sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
             //sprite.y = 100.0 + Math.sin(elapsed/50.0) * 100.0;
         });

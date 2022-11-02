@@ -1,6 +1,6 @@
 import Scene from './Scene.mjs';
 
-let BODY, WIDTH, HEIGHT
+let BODY, WIDTH, HEIGHT;
 let LAST = 0;
 
 document.addEventListener('DOMContentLoaded', (event) => {
