@@ -1,5 +1,4 @@
-let BODY, WIDTH, HEIGHT
-let LAST = 0;
+import * as PIXI from './lib/pixi.min.mjs';
 
 const IMAGES = [
     '1.jpg',
@@ -24,7 +23,7 @@ const getRandomImage = function(images) {
         Math.floor(Math.random() * images.length)];
 };
 
-const makeBlock = function(app, i, j) {
+const makeBlock = function(app, i, j, width) {
     if (Math.random() > 0.5) {
         const img = getRandomImage(IMAGES);
         const sprite = PIXI.Sprite.from('./img/' + img);
@@ -60,23 +59,28 @@ const makeBlock = function(app, i, j) {
     g.on('pointerdown', (event) => {
         console.log('g pointerdown');
     });
+    g.visible = false;
     g.lineStyle(0);
     g.beginFill(0x650A5A, 1);
-    g.drawCircle(Math.random() * WIDTH, j, 28 + (j/10));
+    g.drawCircle(Math.random() * width, j, 28 + (j/10));
     g.endFill();
     app.stage.addChild(g);
     return g;
 };
 
-const makeGrid = function(app) {
-    for (let i = 0; i < WIDTH; i += 80) {
-        for (let j = 0; j < HEIGHT; j += 80) {
-            makeBlock(app, i, j);
+const makeGrid = function(app, width, height) {
+    let grid = [];
+ 
+    for (let i = 0; i < width; i += 80) {
+        for (let j = 0; j < height; j += 80) {
+            grid.push(makeBlock(app, i, j, width));
         }
     }
+
+    return grid;
 };
 
-class Scene {
+export default class Scene {
     constructor(w, h) {
         const app = new PIXI.Application({
             antialias: true,
@@ -87,7 +91,7 @@ class Scene {
         this.app = app;
         document.body.appendChild(app.view);
         const sprite = makeBlock(app, 1, 2);
-        makeGrid(app);
+        makeGrid(app, w, h);
 
         let elapsed = 0.0;
         app.ticker.add((delta) => {
@@ -97,9 +101,3 @@ class Scene {
         });
     }
 }
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    WIDTH = window.innerWidth - 32;
-    HEIGHT = window.innerHeight - 32;
-    new Scene(WIDTH, HEIGHT);
-});
