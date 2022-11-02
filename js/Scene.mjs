@@ -62,7 +62,9 @@ const makeBlock = function(app, i, j, width) {
     g.visible = false;
     g.lineStyle(0);
     g.beginFill(0x650A5A, 1);
-    g.drawCircle(Math.random() * width, j, 28 + (j/10));
+    g.x = Math.random() * width;
+    g.y = j;
+    g.drawCircle(0, 0, 28 + (j/10));
     g.endFill();
     app.stage.addChild(g);
     return g;
@@ -96,25 +98,30 @@ export default class Scene {
         const sprite = makeBlock(app, 1, 2);
         const grid = makeGrid(app, w, h);
 
-        const invisible = grid.filter(function(x) {
+        let invisible = grid.filter(function(x) {
             return !x.visible;
-        });
+        }).sort((a, b) => a.y - b.y);
 
         let elapsed = 0.0;
+        let i = 0;
         app.ticker.add((delta) => {
             elapsed += delta;
 
-            if (Math.round(elapsed) % 2 === 0) {
-                const idx = Math.floor(Math.random() * invisible.length);
-                invisible[idx].visible = true;
+            if (i >= invisible.length) {
+                i = 0;
+            }
+
+            if (Math.random() > 0.5) {
+                invisible[i].visible = true;
             } else {
-                const idx2 = Math.floor(Math.random() * invisible.length);
-                invisible[idx2].visible = false;
+                invisible[i].visible = false;
             }
 
             //console.log(delta);
             //sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
             //sprite.y = 100.0 + Math.sin(elapsed/50.0) * 100.0;
+
+            i += 1;
         });
     }
 
