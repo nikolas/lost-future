@@ -82,6 +82,8 @@ const makeGrid = function(app, width, height) {
 
 export default class Scene {
     constructor(w, h) {
+        const container = document.querySelector('.container');
+
         const app = new PIXI.Application({
             antialias: true,
             backgroundAlpha: 0,
@@ -89,7 +91,8 @@ export default class Scene {
             height: h
         });
         this.app = app;
-        document.body.appendChild(app.view);
+        container.appendChild(app.view);
+
         const sprite = makeBlock(app, 1, 2);
         const grid = makeGrid(app, w, h);
 
@@ -113,5 +116,9 @@ export default class Scene {
             //sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
             //sprite.y = 100.0 + Math.sin(elapsed/50.0) * 100.0;
         });
+    }
+
+    resize(w, h) {
+        this.app.renderer.resize(w, h);
     }
 }
