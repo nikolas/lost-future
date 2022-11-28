@@ -36,11 +36,11 @@ const makeBlock = function(app, i, j, width) {
         sprite.width = 80;
         sprite.height = 80;
         sprite.anchor.set(0.5);
-        sprite.interactive = true;
-        sprite.cursor = 'pointer';
-        sprite.on('pointerdown', () => {
+        //sprite.interactive = true;
+        //sprite.cursor = 'pointer';
+        /*sprite.on('pointerdown', () => {
             console.log('pointerdown');
-        });
+        });*/
 
         sprite.on('mouseover', () => {
             sprite.tint = 0xFB3050;
@@ -53,12 +53,14 @@ const makeBlock = function(app, i, j, width) {
         return sprite;
     }
 
+    return;
+
     const g = new PIXI.Graphics();
-    g.interactive = true;
-    g.cursor = 'pointer';
-    g.on('pointerdown', (event) => {
+    //g.interactive = true;
+    //g.cursor = 'pointer';
+    /*g.on('pointerdown', (event) => {
         console.log('g pointerdown');
-    });
+    });*/
     g.visible = false;
     g.lineStyle(0);
     g.beginFill(0x650A5A, 1);
@@ -100,32 +102,27 @@ export default class Scene {
         const sprite = makeBlock(app, 1, 2);
         const grid = makeGrid(app, w, h);
 
-        let invisible = grid.filter(function(x) {
+        /*let invisible = grid.filter(function(x) {
             return !x.visible;
-        }).sort((a, b) => a.y - b.y);
+        }).sort((a, b) => a.y - b.y);*/
 
         let elapsed = 0.0;
         let i = 0;
         let time = 0;
         app.ticker.add((delta) => {
             time += 1 / 60;
-            //quad.shader.uniforms.time = time;
-            /*quad.scale.set(
-                Math.cos(time) * 1 + 2,
-                1);*/
-                //Math.sin(time * 0.7) * 1 + 2);
 
             elapsed += delta;
 
-            if (i >= invisible.length) {
+            /*if (i >= invisible.length) {
                 i = 0;
-            }
+            }*/
 
-            if (Math.round(elapsed) % 2 === 0) {
+            /*if (Math.round(elapsed) % 2 === 0) {
                 invisible[i].visible = true;
             } else {
                 invisible[i].visible = false;
-            }
+            }*/
             
             this.light = Math.cos(elapsed / 50);
 
