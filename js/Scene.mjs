@@ -1,5 +1,4 @@
 import * as PIXI from './lib/pixi.min.mjs';
-import {makeShader} from './shader.mjs';
 
 const IMAGES = [
     '1.jpg',
@@ -101,27 +100,6 @@ export default class Scene {
         const sprite = makeBlock(app, 1, 2);
         const grid = makeGrid(app, w, h);
 
-        const shader = makeShader(w, h);
-        const geometry = new PIXI.Geometry()
-              .addAttribute('aVertexPosition', // the attribute name
-                            [-100, -100, // x, y
-                             100, -100, // x, y
-                             100, 100,
-                             -100, 100], // x, y
-                            2) // the size of the attribute
-              .addAttribute('aUvs', // the attribute name
-                            [0, 0, // u, v
-                             1, 0, // u, v
-                             1, 1,
-                             0, 1], // u, v
-                            2) // the size of the attribute
-              .addIndex([0, 1, 2, 0, 2, 3]);
-        const quad = new PIXI.Mesh(geometry, shader);
-        quad.position.set(400, 300);
-        quad.scale.set(2);
-
-        this.app.stage.addChild(quad);
-
         let invisible = grid.filter(function(x) {
             return !x.visible;
         }).sort((a, b) => a.y - b.y);
@@ -131,7 +109,7 @@ export default class Scene {
         let time = 0;
         app.ticker.add((delta) => {
             time += 1 / 60;
-            quad.shader.uniforms.time = time;
+            //quad.shader.uniforms.time = time;
             /*quad.scale.set(
                 Math.cos(time) * 1 + 2,
                 1);*/
