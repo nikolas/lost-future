@@ -35,6 +35,7 @@ const makeBlock = function(app, i, j, width) {
     sprite.width = 80;
     sprite.height = 80;
     sprite.anchor.set(0.5);
+    sprite.alpha = Math.random() + 0.25;
 
     sprite.on('mouseover', () => {
         sprite.tint = 0xFB3050;
