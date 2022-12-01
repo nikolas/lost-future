@@ -24,52 +24,27 @@ const getRandomImage = function(images) {
 };
 
 const makeBlock = function(app, i, j, width) {
-    if (Math.random() > 0.5) {
-        const img = getRandomImage(IMAGES);
-        const sprite = PIXI.Sprite.from('./img/' + img);
-        sprite.texture.on('update', (e) => {
-            const aspectRatio = e.width / e.height;
-            sprite.height /= aspectRatio;
-        });
-        sprite.x = i;
-        sprite.y = j;
-        sprite.width = 80;
-        sprite.height = 80;
-        sprite.anchor.set(0.5);
-        //sprite.interactive = true;
-        //sprite.cursor = 'pointer';
-        /*sprite.on('pointerdown', () => {
-            console.log('pointerdown');
-        });*/
+    const img = getRandomImage(IMAGES);
+    const sprite = PIXI.Sprite.from('./img/' + img);
+    sprite.texture.on('update', (e) => {
+        const aspectRatio = e.width / e.height;
+        sprite.height /= aspectRatio;
+    });
+    sprite.x = i;
+    sprite.y = j;
+    sprite.width = 80;
+    sprite.height = 80;
+    sprite.anchor.set(0.5);
 
-        sprite.on('mouseover', () => {
-            sprite.tint = 0xFB3050;
-        });
-        sprite.on('mouseleave', () => {
-            sprite.tint = 0xFFFFFF;
-        });
+    sprite.on('mouseover', () => {
+        sprite.tint = 0xFB3050;
+    });
+    sprite.on('mouseleave', () => {
+        sprite.tint = 0xFFFFFF;
+    });
 
-        app.stage.addChild(sprite);
-        return sprite;
-    }
-
-    return;
-
-    const g = new PIXI.Graphics();
-    //g.interactive = true;
-    //g.cursor = 'pointer';
-    /*g.on('pointerdown', (event) => {
-        console.log('g pointerdown');
-    });*/
-    g.visible = false;
-    g.lineStyle(0);
-    g.beginFill(0x650A5A, 1);
-    g.x = Math.random() * width;
-    g.y = j;
-    g.drawCircle(0, 0, 28 + (j/10));
-    g.endFill();
-    app.stage.addChild(g);
-    return g;
+    app.stage.addChild(sprite);
+    return sprite;
 };
 
 const makeGrid = function(app, width, height) {
@@ -84,9 +59,14 @@ const makeGrid = function(app, width, height) {
     return grid;
 };
 
+const makeRoom = function() {
+    const g = new PIXI.Graphics();
+    g.drawRect(0, 0, 100, 100);
+};
+
 export default class Scene {
-    constructor(w, h) {
-        const container = document.querySelector('.container');
+    constructor(name, w, h) {
+        const container = document.querySelector(`.container.${name}`);
         this.light = 0;
 
         const app = new PIXI.Application({
@@ -101,6 +81,8 @@ export default class Scene {
 
         const sprite = makeBlock(app, 1, 2);
         const grid = makeGrid(app, w, h);
+
+        makeRoom();
 
         /*let invisible = grid.filter(function(x) {
             return !x.visible;

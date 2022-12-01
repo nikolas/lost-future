@@ -1,0 +1,19 @@
+.container canvas {
+    position: absolute;
+}
+
+.container.left canvas {
+    transform: perspective(100px) rotateY(4deg);
+}
+
+.container.right canvas{
+    transform: perspective(100px) rotateY(-25deg);
+}
+
+.container.top canvas {
+    transform: perspective(100px) rotateX(-25deg);
+}
+
+.container.bottom canvas {
+    transform: perspective(100px) rotateX(25deg);
+}
