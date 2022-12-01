@@ -26,10 +26,6 @@ const getRandomImage = function(images) {
 const makeBlock = function(app, i, j, width) {
     const img = getRandomImage(IMAGES);
     const sprite = PIXI.Sprite.from('./img/' + img);
-    sprite.texture.on('update', (e) => {
-        const aspectRatio = e.width / e.height;
-        sprite.height /= aspectRatio;
-    });
     sprite.x = i;
     sprite.y = j;
     sprite.width = 80;
